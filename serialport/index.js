@@ -35,5 +35,3 @@ dataParser.on('data', (data) => {
 
 
 export {dataParser} 
-
-
