@@ -32,7 +32,6 @@ exec('node index.js', { cwd: permissionsConsoleDirectory }, (error, stdout, stde
     console.error(`Error: ${error.message}`);
     return;
   }
-
   if (stderr) {
     console.error(`stderr: ${stderr}`);
     return;
@@ -41,8 +40,7 @@ exec('node index.js', { cwd: permissionsConsoleDirectory }, (error, stdout, stde
 });
 
 
-
-
+// parseamos la informacion que nos mande el serial
 dataParser.on('data', (data) => {
   // dataParser = data.ReadlineParser();
   console.log(`Parsed data server: ${data}`);
@@ -50,8 +48,8 @@ dataParser.on('data', (data) => {
 });
 
 
-
-
+// realizamos la conexion y emitimnos por el websocket 
+// envaimos la data por el wensoket
 io.on('connection', socket => {
   socket.emit("conexion realizada");
 
@@ -64,5 +62,5 @@ io.on('connection', socket => {
 
 
 server.listen(3535);
-console.log('listening on port: ', 3000);
+console.log('listening on port: ', 3535);
 
