@@ -3,7 +3,7 @@ import cors from 'cors';
 
 const serverSky = express();
 serverSky.use(cors({
-    origin: 'http://localhost:4200', 
+    origin: 'http://172.16.103.60:4200', 
     methods: ['GET', 'POST'],
     credentials: true,
 }));
