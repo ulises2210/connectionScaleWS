@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 
-const serverSky = new express();
+const serverSky = express();
 serverSky.use(cors({
-    origin: 'http://localhost:4200/#/sky/yarn/bobinas-cortas', 
+    origin: 'http://localhost:4200', 
     methods: ['GET', 'POST'],
     credentials: true,
-}))
+}));
 
-export default serverSky
+export default serverSky;
