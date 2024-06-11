@@ -8,7 +8,7 @@ const args = ["-S", "chmod", "666", "/dev/ttyS0"];
 export const CommandsPermissScale = spawn(command, args);
 
 // Contraseña para el comando sudo
-const password = '22710';
+const password = 'inspeccion';
 CommandsPermissScale.stdin.write(password + '\n');
 
 CommandsPermissScale.stdout.on('data', (data) => {

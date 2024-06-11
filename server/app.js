@@ -3,7 +3,7 @@ import cors from 'cors';
 
 const serverSky = express();
 serverSky.use(cors({
-    origin: 'http://172.16.103.60:4200', 
+    origin: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/bobinas-cortas',
     methods: ['GET', 'POST'],
     credentials: true,
 }));

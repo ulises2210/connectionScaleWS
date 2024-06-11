@@ -8,7 +8,7 @@ import { parser, port } from '../serialport/readingScaleConnection.js';
 const server = createServer(serverSky);
 const io = new SocketServer(server, {
   cors: {
-    origin: 'http://172.16.103.60:4200',
+    cors: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/bobinas-cortas',
     methods: ['GET', 'POST'],
     credentials: true,
   }
@@ -30,20 +30,48 @@ exec('node scaleConnection.js', { cwd: permissionsConsoleDirectory }, (error, st
   console.log(`stdout: ${stdout}`);
 });
 
+let lastValue = null
+// Emitir datos por WebSocket
+
+
 // Emitir datos por WebSocket
 io.on('connection', (socket) => {
   console.log("Client connected");
 
-  port.on('data', (data) => {
-    socket.emit('reading', data.toString());
-    console.log(`Raw data server: ${data}`);
+  // Emitir el último valor conocido cuando un cliente se conecta
+  if (lastValue) {
+    socket.emit('ultimate-Value', lastValue);
+  }
+
+  socket.on('disconnect', () => {
+    console.log("Client disconnected");
   });
 
-  parser.on('data', (data) => {
-    console.log(`Parsed data server: ${data}`);
+  socket.on('reconnection', () => {
+    if (lastValue) {
+      socket.emit('ultimate-Value', lastValue);
+    }
   });
+
 });
+
+
+parser.on('data', (data) => {
+  const match = data.match(/(\d+(\.\d+)?)\s*yds/);
+  if (match) {
+    const currentValue = match[1]; // Captura el valor numérico
+
+    // Solo emitir si el valor ha cambiado y no es una fracción incompleta
+    if (currentValue !== lastValue && /^\d+(\.\d+)?$/.test(currentValue)) {
+      console.log('parser-server: ', currentValue);
+      io.emit('reading', currentValue); // Emitir a todos los clientes conectados
+      lastValue = currentValue;
+    }
+  }
+});
+
 
 server.listen(3535, () => {
   console.log('Listening on port: 3535');
 });
+
