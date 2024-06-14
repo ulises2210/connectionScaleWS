@@ -1,0 +1,41 @@
+PASO1 : Crear el script de shell : 
+    Guarda este script en /usr/local/bin/ejecutarNode.sh.
+    COMANDO : "sudo nano /usr/local/bin/ejecutarNode.sh" el archivo esta en archivos_SH
+
+PASO2 : permisos en el script de shell:
+        COMANDO :  "sudo chmod +x /usr/local/bin/ejecutarNode.sh"
+
+PASO3 : Crear el archivo de servicio de systemd Luego, crea el archivo de servicio en /etc/systemd/system/serviceNode.service : 
+        Comando : "sudo nano /etc/systemd/system/serviceNode.service" el archivo esta en archivos_SH
+
+Paso 4: Habilitar y arrancar el servicio Recarga los archivos de configuración de systemd:
+    COMANDOS : "sudo systemctl daemon-reload"
+             : "sudo systemctl enable serviceNode.service" 
+             : "sudo systemctl start serviceNode.service"
+
+
+Paso 5: Verificar el estado del servicio Verifica el estado del servicio para asegurarte de que se está ejecutando correctamente:
+        COMANDO : "sudo systemctl status serviceNode.service"
+
+Verificar los logs del servicio
+Para obtener más información sobre posibles errores o para verificar que el script se ejecutó correctamente, puedes revisar los logs del servicio:
+
+COMANDO : "journalctl -u miServicioNode.service"
+
+
+//****************************************************************************************************
+
+Resumen
+Crear tu archivo Node.js: connectionScaleWS (carpeta /home/developer/connectionScaleWS/server/index.js)
+Crear tu script de shell: /usr/local/bin/ejecutarNode.sh.
+Asegurar permisos de ejecución: sudo chmod +x /usr/local/bin/ejecutarNode.sh.
+Crear el archivo de servicio de systemd: /etc/systemd/system/serviceNode.service.
+Recargar systemd: sudo systemctl daemon-reload.
+Habilitar y arrancar el servicio: sudo systemctl enable serviceNode.service y sudo systemctl start serviceNode.service.
+Verificar el estado del servicio: sudo systemctl status serviceNode.service.
+Revisar los logs del servicio: journalctl -u serviceNode.service.
+
+
+
+
+

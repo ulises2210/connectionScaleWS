@@ -1,0 +1,53 @@
+Guía para Configurar y Ejecutar un Servicio Node.js con Systemd
+
+Paso 1: Crear el Script de Shell
+
+1. Abre un editor de texto para crear el script de shell.
+    sudo nano /usr/local/bin/ejecutarNode.sh
+2. Guarda el script en la ubicación especificada (/usr/local/bin/ejecutarNode.sh).
+
+Paso 2: Asignar Permisos de Ejecución al Script de Shell
+
+1. Asigna permisos de ejecución al script:
+    sudo chmod +x /usr/local/bin/ejecutarNode.sh
+
+Paso 3: Crear el Archivo de Servicio de Systemd
+
+1. Crea el archivo de servicio en /etc/systemd/system/serviceNode.service:
+    sudo nano /etc/systemd/system/serviceNode.service
+
+Paso 4: Habilitar y Arrancar el Servicio
+
+1. Recarga los archivos de configuración de systemd:
+    sudo systemctl daemon-reload
+2. Habilita el servicio para que se inicie automáticamente al arrancar el sistema:
+    sudo systemctl enable serviceNode.service
+3. Inicia el servicio:
+    sudo systemctl start serviceNode.service
+
+Paso 5: Verificar el Estado del Servicio
+
+1. Verifica que el servicio se esté ejecutando correctamente:
+    sudo systemctl status serviceNode.service
+
+Verificar los Logs del Servicio
+
+1. Para obtener más información sobre posibles errores o para verificar que el script se ejecutó correctamente, revisa los logs del servicio:
+    journalctl -u serviceNode.service
+
+Resumen de los Pasos
+
+1. Crear tu archivo Node.js en /home/developer/connectionScaleWS/server/index.js.
+2. Crear tu script de shell en /usr/local/bin/ejecutarNode.sh.
+3. Asignar permisos de ejecución al script de shell:
+    sudo chmod +x /usr/local/bin/ejecutarNode.sh
+4. Crear el archivo de servicio de systemd en /etc/systemd/system/serviceNode.service.
+5. Recargar systemd:
+    sudo systemctl daemon-reload
+6. Habilitar y arrancar el servicio:
+    sudo systemctl enable serviceNode.service
+    sudo systemctl start serviceNode.service
+7. Verificar el estado del servicio:
+    sudo systemctl status serviceNode.service
+8. Revisar los logs del servicio:
+    journalctl -u serviceNode.service

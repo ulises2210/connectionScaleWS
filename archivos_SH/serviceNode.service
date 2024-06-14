@@ -1,0 +1,9 @@
+[Unit]
+Description=Mi Servicio Node.js
+
+[Service]
+ExecStart=/usr/local/bin/ejecutarNode.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

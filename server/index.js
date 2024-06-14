@@ -55,13 +55,32 @@ io.on('connection', (socket) => {
 
 });
 
+// ***** REVISAR EL PARSER, ESTE A VECES EMITE EL VALOR INCOMPLETO, HACER PRUEBAS O AJUSTAR
+// parser.on('data', (data) => {
+//   const match = data.match(/(\d+(\.\d+)?)\s*yds/);
+//   if (match) {
+//     const currentValue = match[1]; // Captura el valor numérico
 
+//     // Solo emitir si el valor ha cambiado y no es una fracción incompleta
+//     if (currentValue !== lastValue && /^\d+(\.\d+)?$/.test(currentValue)) {
+//       console.log('parser-server: ', currentValue);
+//       io.emit('reading', currentValue); // Emitir a todos los clientes conectados
+//       lastValue = currentValue;
+//     }
+//   }
+// });
+
+// ***** REVISAR O HACER PRUEBAS CON ESTA FUNCION DE PARSEADO
 parser.on('data', (data) => {
-  const match = data.match(/(\d+(\.\d+)?)\s*yds/);
+  // Eliminar caracteres no numéricos, excepto el punto decimal y los espacios
+  const cleanedData = data.replace(/[^0-9.\s]/g, '');
+
+  // Buscar el valor numérico seguido de un espacio y "yds"
+  const match = cleanedData.match(/(\d+(\.\d+)?)\s*yds/);
   if (match) {
     const currentValue = match[1]; // Captura el valor numérico
 
-    // Solo emitir si el valor ha cambiado y no es una fracción incompleta
+    // Solo emitir si el valor ha cambiado y está correctamente formado
     if (currentValue !== lastValue && /^\d+(\.\d+)?$/.test(currentValue)) {
       console.log('parser-server: ', currentValue);
       io.emit('reading', currentValue); // Emitir a todos los clientes conectados
@@ -69,6 +88,7 @@ parser.on('data', (data) => {
     }
   }
 });
+
 
 
 server.listen(3535, () => {
