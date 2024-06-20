@@ -1,3 +1,11 @@
+PASO0 : dar permisos a dispositivos seriales : 
+        1.- crear un archivo de reglas udev :
+                COMANDO : "sudo nano /etc/udev/rules.d/99-serial.rules" : el archivo esta en archivos_SSH
+        2.- Guarda el archivo y recarga las reglas de udev:
+                COMANDOS : "sudo udevadm control --reload-rules" "sudo udevadm trigger"
+
+
+
 PASO1 : Crear el script de shell : 
     Guarda este script en /usr/local/bin/ejecutarNode.sh.
     COMANDO : "sudo nano /usr/local/bin/ejecutarNode.sh" el archivo esta en archivos_SH
