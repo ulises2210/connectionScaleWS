@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="shorts-coils.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/primeflex@latest/primeflex.css"
+    />
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <body>
+    <div class="w-full  flex justify-content-center">
+      <h1 class="font-bold text-6xl">{{id}}</h1>
+    </div>
+
+    <div class="w-full flex">
+      <div class="w-6">
+        <div class="col-12">
+          <span class="text-5xl">Fecha : </span>
+        </div>
+        <div class="col-12">
+          <span class="font-bold text-6xl">{{fecha}}</span>
+        </div>
+        <div class="col-12">
+          <span class="text-5xl">Muda / posición : </span>
+        </div>
+        <div class="col-12">
+          <span class="font-bold text-6xl">{{muda_posicion}}</span>
+        </div>
+        <div class="col-12">
+          <span class="text-5xl">Elemento : </span>
+        </div>
+        <div class="col-12">
+          <span class="font-bold text-6xl">{{elemento}}</span>
+        </div>
+      </div>
+
+      <div class="w-6 flex flex-wrap justify-content-center align-content-center">
+        <div id="qrcode"></div>
+      </div>
+    </div>
+    <script>
+      // Función para generar el código QR
+      function generarQR(texto) {
+        // Elimina cualquier código QR previo
+        document.getElementById("qrcode").innerHTML = "";
+
+        // Genera un nuevo código QR
+        new QRCode(document.getElementById("qrcode"), {
+          text: texto,
+          width: 250,
+          height: 250,
+        });
+      }
+
+      // Genera un QR con el texto especificado
+      generarQR("{{qr_text}}");
+    </script>
+  </body>
+</html>

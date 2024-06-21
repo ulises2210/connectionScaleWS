@@ -4,6 +4,10 @@ import { exec } from 'child_process';
 import serverSky from './app.js';
 import path from 'path';
 import { parser, port } from '../serialport/readingScaleConnection.js';
+import { jsPDF } from 'jspdf';
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import html2canvas from 'html2canvas';
 
 const server = createServer(serverSky);
 const io = new SocketServer(server, {
@@ -53,6 +57,54 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('sendDataTicket', async (data)  => {
+    try {
+      // Leer la plantilla HTML
+      const templatePath = path.join(__dirname, 'etiquetasSkyYarn/'+data.file, data.file+'.html');
+      let html = fs.readFileSync(templatePath, 'utf8');
+
+      // Reemplazar los marcadores de posición con los datos recibidos
+      html = html.replace('{{id}}', data.id);
+      html = html.replace('{{fecha}}', data.fecha);
+      html = html.replace('{{muda_posicion}}', data.muda_posicion);
+      html = html.replace('{{elemento}}', data.elemento);
+      html = html.replace('{{qr_text}}', data.qr_text);
+
+      // Usar jsdom para manipular el DOM
+      const dom = new JSDOM(html);
+      const window = dom.window;
+      const document = window.document;
+
+      // Generar el código QR en el documento
+      const script = document.createElement('script');
+      script.textContent = `
+        (${generateQR.toString()})('${data.qr_text}');
+      `;
+      document.body.appendChild(script);
+
+      // Usar html2canvas para convertir el HTML a un canvas
+      const canvas = await html2canvas(document.body);
+
+      // Crear el PDF usando jsPDF
+      const pdf = new jsPDF();
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, 0);
+
+      // Guardar el PDF en el servidor temporalmente
+      const pdfPath = path.join(currentDirectory, 'public', 'ticket.pdf');
+      pdf.save(pdfPath, { returnPromise: true }).then(() => {
+        // Enviar el PDF al cliente
+        io.emit('pdfGenerated', { url: 'ticket.pdf' });
+      }).catch((error) => {
+        console.error('Error al generar el PDF:', error);
+        io.emit('pdfError', { message: 'Error al generar el PDF' });
+      });
+    } catch (error) {
+      console.error('Error en el procesamiento:', error);
+      io.emit('pdfError', { message: 'Error en el procesamiento' });
+    }
+  })
+
 });
 
 // ***** REVISAR EL PARSER, ESTE A VECES EMITE EL VALOR INCOMPLETO, HACER PRUEBAS O AJUSTAR
@@ -95,3 +147,11 @@ server.listen(3535, () => {
   console.log('Listening on port: 3535');
 });
 
+
+function generateQR(texto) {
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode(document.getElementById("qrcode"), {
+    text: texto,
+    width: 250,
+    height: 250,
+  })};
