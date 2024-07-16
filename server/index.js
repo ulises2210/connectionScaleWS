@@ -12,7 +12,7 @@ import html2canvas from 'html2canvas';
 const server = createServer(serverSky);
 const io = new SocketServer(server, {
   cors: {
-    cors: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/bobinas-cortas',
+    cors: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/*',
     methods: ['GET', 'POST'],
     credentials: true,
   }
@@ -35,7 +35,6 @@ exec('node scaleConnection.js', { cwd: permissionsConsoleDirectory }, (error, st
 });
 
 let lastValue = null
-// Emitir datos por WebSocket
 
 
 // Emitir datos por WebSocket
