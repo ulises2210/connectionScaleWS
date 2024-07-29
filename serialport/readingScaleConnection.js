@@ -15,7 +15,7 @@ let lastValue = null;
 
 parser.on('data', (data) => {
     // Filtrar los valores numéricos de las líneas que contienen "yds"
-    const match = data.match(/(\d+(\.\d+)?)\s*yds/);
+    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
     if (match) {
         const currentValue = match[1]; // Captura el valor numérico
 

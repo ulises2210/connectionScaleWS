@@ -8,11 +8,12 @@ import { jsPDF } from 'jspdf';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
 import html2canvas from 'html2canvas';
+import { printFile } from './ticketController.js'
 
 const server = createServer(serverSky);
 const io = new SocketServer(server, {
   cors: {
-    cors: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/*',
+    cors: 'https://skynet.skytex.com.mx:8195/#/sky/yarn/',
     methods: ['GET', 'POST'],
     credentials: true,
   }
@@ -55,6 +56,12 @@ io.on('connection', (socket) => {
       socket.emit('ultimate-Value', lastValue);
     }
   });
+
+  socket.on('ticket', (data) => {
+    console.log('data')
+    console.log(data)
+    printFile(data);
+  })
 
   socket.on('sendDataTicket', async (data)  => {
     try {
@@ -127,7 +134,7 @@ parser.on('data', (data) => {
   const cleanedData = data.replace(/[^0-9.\s]/g, '');
 
   // Buscar el valor numérico seguido de un espacio y "yds"
-  const match = cleanedData.match(/(\d+(\.\d+)?)\s*yds/);
+  const match = cleanedData.match(/(\d+(\.\d+)?)\s*kg/);
   if (match) {
     const currentValue = match[1]; // Captura el valor numérico
 
