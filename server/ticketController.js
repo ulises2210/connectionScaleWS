@@ -18,7 +18,7 @@ export async  function printFile(data) {
 
 
 async function fillInfo(data) {
-    const templatePath = '/'
+    const templatePath = '/etiquetasSkyYarn/'+data.fileName+'/'+data.fileName+'.html';
     console.log('Template path:', templatePath);
 
     if (!fs.existsSync(templatePath)) {

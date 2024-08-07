@@ -130,34 +130,39 @@ io.on('connection', (socket) => {
 
 // ***** REVISAR O HACER PRUEBAS CON ESTA FUNCION DE PARSEADO
 parser.on('data', (data) => {
-  // Eliminar caracteres no numéricos, excepto el punto decimal y los espacios
-  const cleanedData = data.replace(/[^0-9.\s]/g, '');
-
-  // Buscar el valor numérico seguido de un espacio y "yds"
-  const match = cleanedData.match(/(\d+(\.\d+)?)\s*kg/);
-  if (match) {
-    const currentValue = match[1]; // Captura el valor numérico
-
-    // Solo emitir si el valor ha cambiado y está correctamente formado
-    if (currentValue !== lastValue && /^\d+(\.\d+)?$/.test(currentValue)) {
-      console.log('parser-server: ', currentValue);
-      io.emit('reading', currentValue); // Emitir a todos los clientes conectados
-      lastValue = currentValue;
+  //  console.log('Datos crudos desde index:', data);
+  
+    // Buscar el valor numérico seguido de "kg"
+    // La expresión regular maneja signos, espacios y la falta de espacio antes de "kg"
+    const match = data.match(/[\+\-]?(\d+(\.\d+)?)\s*kg/i);
+  //  console.log('match:', match);
+  
+    if (match) {
+      const currentValue = match[1]; // Captura el valor numérico
+    //  console.log('Valor capturado:', currentValue);
+  
+      // Solo emitir si el valor ha cambiado y está correctamente formado
+      if (currentValue !== lastValue && /^\d+(\.\d+)?$/.test(currentValue)) {
+       // console.log('parser-server:', currentValue);
+        io.emit('reading', currentValue); // Emitir a todos los clientes conectados
+        lastValue = currentValue;
+      }
+    } else {
+      console.log('No se encontró una coincidencia con la expresión regular.');
     }
-  }
-});
-
-
-
-server.listen(3535, () => {
-  console.log('Listening on port: 3535');
-});
-
-
-function generateQR(texto) {
-  document.getElementById("qrcode").innerHTML = "";
-  new QRCode(document.getElementById("qrcode"), {
-    text: texto,
-    width: 250,
-    height: 250,
-  })};
+  });
+  
+  
+  
+  server.listen(3535, () => {
+    console.log('Listening on port: 3535');
+  });
+  
+  
+  function generateQR(texto) {
+    document.getElementById("qrcode").innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), {
+      text: texto,
+      width: 250,
+      height: 250,
+    })};
