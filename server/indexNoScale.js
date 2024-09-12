@@ -1,14 +1,10 @@
 import { createServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
 import serverSky from './app.js';
-import { parser, openPort } from '../serialport/readingScaleConnection.js';
-import { printFile } from './ticketController.js';
-import { exec } from 'child_process';
-import { fileURLToPath } from 'url';
+import { printFile } from './ticketController.js'
+import { exec } from 'child_process'
 import path from 'path';
-import { eventEmitter } from '../serialport/readingScaleConnection.js';
-
-
+import { fileURLToPath } from 'url';
 
 const server = createServer(serverSky);
 const io = new SocketServer(server, {
@@ -19,30 +15,71 @@ const io = new SocketServer(server, {
   }
 });
 
-let lastValue = null;
+const dataPrinter = {
+  typePrinter: 'sheet',
+}
 
-openPort('/dev/ttyS0');
+// ************* DESCOMENTAR PARA HACER LAS PRUEBAS PARA GENERAR EL PDF *********************
 
-io.on('connection', (socket) => {
+
+// const data = [ {
+//   type: "print",
+//   fileName: 'sky-packing',
+//   printer: 'ticket',
+//   orientation : 'l',
+//   format : [210,297], 
+//   sku_cve:'VDTY1501441SR2SI1RWS0101',
+//   sku_cve_name: 'DTY 150D/144F (167 DTEX)',
+//   lote_cve: '01',
+//   calidad:'AA',
+//   afinidad:'AA',
+//   no_bobinas:'6',
+//   peso_bruto:'37.7 Kg / 83.1 Lb',
+//   peso_Neto:'36.0 Kg / 79.4 Lb',
+//   date: '18/08/2024',
+//   tarima_cve: 'CM|PN19601545952',
+
+// }, {
+//   type: "print",
+//   fileName: 'sky-yarn',
+//   printer: 'sheet',
+//   orientation: 'l',
+//   format :  [210,297],
+//   carro: 'pruebas_carro',
+//   sku_cve: 'pruebas_sku_cve',
+//   lote: 'pruebas_lote',
+//   afinidad: 'pruebas_afinidad',
+//   bobinas: 'pruebas_bobinas',
+//   peso_neto: 'pruebas_peso_neto',
+//   calcNetWeight: '123456789',
+//   fol_dispo: 'pruebas_fol_dispo',
+//   qrcode: [{
+//     width: '200px',
+//     height: '200px',
+//     qrcodeDetail: 'pruebas-qr-+',
+//     idQrCode : "qrcodeImage"
+//   },{
+//     width: '100px',
+//     height: '100px',
+//     qrcodeDetail: 'pruebas-qr-+',
+//     idQrCode : "qrcodeImage1"
+  // }]
+// }]
+
+// printFile(data);
+
+// installPrintSheet(dataPrinter);
+
+// Emitir datos por WebSocket
+io.on('connection', async (socket) => {
   console.log("Client connected");
-
-  if (lastValue) {
-    socket.emit('ultimate-Value', lastValue);
-  }
 
   socket.on('disconnect', () => {
     console.log("Client disconnected");
   });
 
   socket.on('reconnection', () => {
-    if (lastValue) {
-      socket.emit('ultimate-Value', lastValue);
-    }
-  });
-
-  socket.on('typeConnectionScale', (data) => {
-    openPort(data)
-
+    console.log("Client reestablished");
   });
 
   socket.on('ticket', async (data) => {
@@ -53,7 +90,7 @@ io.on('connection', (socket) => {
     } catch (error) {
       socket.emit('printResult', { success: false, error });
     }
-  });
+  })
 
   socket.on('installPrint', async (data) => {
     try {
@@ -67,25 +104,19 @@ io.on('connection', (socket) => {
       console.log(error);
       socket.emit('installPrintResult', {
         success: false,
-        decs: error.decs || 'desconocido error',
-        nameFunc: error.nameFunc || 'desconocido function'
+        decs: error.decs || 'Unknown error', 
+        nameFunc: error.nameFunc || 'Unknown function' 
       });
     }
   });
 
-
-});
-
-eventEmitter.on('newValue', (value) => {
-  console.log('Valor constante recibido:', value);
-  io.emit('reading', value);
-  lastValue = value;
-    // Aquí puedes hacer lo que necesites con el valor constante
 });
 
 server.listen(3535, () => {
   console.log('Listening on port: 3535');
 });
+
+
 
 async function installPrint(data) {
   console.log('Installing');
@@ -97,7 +128,7 @@ async function installPrint(data) {
         console.log(`error: ${err}`);
         return reject({
           success: false,
-          nameFunc: 'installPrint' + data.typePrinter,
+          nameFunc: 'installPrint'+data.typePrinter,
           decs: err.decs || err.message
         });
       }
@@ -105,24 +136,25 @@ async function installPrint(data) {
         console.log(`stderr: ${stderr}`);
         return reject({
           success: false,
-          nameFunc: 'installPrint' + data.typePrinter,
+          nameFunc: 'installPrint'+data.typePrinter,
           decs: stderr
         });
       }
       console.log('PrintSheet installed successfully', result);
       resolve({
         success: true,
-        nameFunc: 'installPrint' + data.typePrinter,
+        nameFunc: 'installPrint'+data.typePrinter,
         decs: result
       });
     });
   });
 }
 
+
 function directoryFiles() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const directory = path.join(__dirname, '..');
-  console.log('Directory', directory);
+  // console.log('Directory', directory);
   return directory;
 }

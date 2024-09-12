@@ -2,7 +2,10 @@
 Description=Mi Servicio Node.js
 
 [Service]
-ExecStart=/usr/local/bin/ejecutarNode.sh
+User=developer
+Type=simple
+ExecStart=/usr/bin/node /home/developer/connectionScaleWS/server/index.js
+#ExecStart=/usr/bin/node /home/developer/connectionScaleWS/server/indexNoScale.js
 Restart=on-failure
 
 [Install]

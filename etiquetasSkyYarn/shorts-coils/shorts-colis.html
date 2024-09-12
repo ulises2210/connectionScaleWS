@@ -10,8 +10,6 @@
       href="https://unpkg.com/primeflex@latest/primeflex.css"
     />
   </head>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
   <body>
     <div class="w-full  flex justify-content-center">
       <h1 class="font-bold text-6xl">{{id}}</h1>
@@ -39,26 +37,10 @@
         </div>
       </div>
 
-      <div class="w-6 flex flex-wrap justify-content-center align-content-center">
-        <div id="qrcode"></div>
+      <div class="w-6 flex flex-wrap justify-content-end align-content-center">
+        <!-- Reemplazar con el código QR generado -->
+        {{qrcodeImage}}
       </div>
     </div>
-    <script>
-      // Función para generar el código QR
-      function generarQR(texto) {
-        // Elimina cualquier código QR previo
-        document.getElementById("qrcode").innerHTML = "";
-
-        // Genera un nuevo código QR
-        new QRCode(document.getElementById("qrcode"), {
-          text: texto,
-          width: 250,
-          height: 250,
-        });
-      }
-
-      // Genera un QR con el texto especificado
-      generarQR("{{qr_text}}");
-    </script>
   </body>
 </html>

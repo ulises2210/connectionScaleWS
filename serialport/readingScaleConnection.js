@@ -1,29 +1,62 @@
-import { SerialPort } from 'serialport';
-import { ReadlineParser } from '@serialport/parser-readline';
+import { SerialPort } from "serialport";
+import { ReadlineParser } from "@serialport/parser-readline";
+import { EventEmitter } from "events";
 
-// Configuración del puerto serie y el parser
-const port = new SerialPort({
-    // path: '/dev/ttyS0', // Asegúrate de que esta sea la ruta correcta de tu puerto serie
-    path: '/dev/ttyUSB0', // Asegúrate de que esta sea la ruta correcta de tu puerto serie
-    baudRate: 9600
-});
+let port = null;
+let parser = null;
+const eventEmitter = new EventEmitter();
 
-const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
+function openPort(pathPort) {
+  if (port && port.isOpen) {
+    port.close(() => {
+      console.log(`Puerto cerrado: ${port.path}`);
+      configurePort(pathPort);
+    });
+  } else {
+    configurePort(pathPort);
+  }
+}
 
+function configurePort(pathPort) {
+  port = new SerialPort({
+    path: pathPort,
+    baudRate: 9600,
+    autoOpen: true, // Abrir automáticamente
+  });
 
-let lastValue = null;
+  port.on("open", () => {
+    console.log(`Puerto abierto: ${pathPort}`);
+    parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+    emitData();
+  });
 
-parser.on('data', (data) => {
-    // Filtrar los valores numéricos de las líneas que contienen "yds"
-    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
-    if (match) {
-        const currentValue = match[1]; // Captura el valor numérico
+  port.on("close", () => {
+    console.log(`Puerto cerrado: ${pathPort}`);
+  });
+
+  port.on("error", (err) => {
+    console.error("Error en el puerto: ", err.message);
+  });
+}
+
+function emitData() {
+  let lastValue = null;
+
+    if (parser) {
+    parser.on("data", (data) => {
+      const match = data.match(/(\d+(\.\d+)?)\s*kg/);
+      if (match) {
+        const currentValue = match[1];
 
         if (currentValue !== lastValue) {
-            console.log('parser: ', currentValue);
-            lastValue = currentValue;
-        }
-    }
-});
+          lastValue = currentValue;
 
-export { parser, port };
+          // Emitir el valor mediante EventEmitter
+          eventEmitter.emit("newValue", lastValue);
+        }
+      }
+    });
+  }
+}
+
+export { parser, port, openPort, eventEmitter };
